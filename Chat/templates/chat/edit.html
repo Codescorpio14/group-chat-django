@@ -1,0 +1,12 @@
+{% extends 'base.html' %}
+
+{% block content %}
+    <div>
+        <form method="POST">
+            {% csrf_token %}
+            <input type="text" name="content" value="{{ message.content }}">
+        <button>Confrim edit</button>
+        <a href="{{request.META.HTTP_REFERER}}"><button type="button">Cancel</button></a>
+    </form>
+    </div>
+{% endblock %}

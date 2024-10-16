@@ -1,0 +1,42 @@
+{% extends 'base.html' %}
+
+{% block title %}
+    Rooms
+{% endblock %}
+ 
+{% block styles %}
+
+<style>
+    .rooms-con{
+        display: grid;
+        grid-template-columns: 1fr 4fr 1fr;
+        gap: 20px
+    }
+</style>
+
+{% endblock %}
+
+{% block content %}
+    <section class="rooms-con">
+
+        <aside>
+           {% include "chat/components/_topics.html" %}
+        </aside>
+
+        <div>
+
+            {% if user.is_authenticated %}
+            <a href="{% url 'create-room' %}">+ New Room</a>
+            {% endif %}
+
+            <div>
+                {% include "chat/components/_feed.html" %}
+            </div>
+        </div>
+
+        <div>
+          {% include "chat/components/_activity.html" %}
+        </div>
+
+    </section>
+{% endblock %}

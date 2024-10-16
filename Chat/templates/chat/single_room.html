@@ -1,0 +1,75 @@
+{% extends 'base.html' %}
+
+{% block title %}
+    {{ room.name }}
+{% endblock %}
+
+{% block styles %}
+
+<style>
+    .room-con{
+        display: grid;
+        grid-template-columns: 3fr 1fr;
+        gap:20px;
+    }
+</style>
+
+{% endblock %}
+
+{% block content %}
+<div class="room-con">   
+
+    <div>
+        <div>
+            <h2>{{ room.name }}</h2>
+            <p>{{ room.description }}</p>
+    
+            {% if request.user == room.host %}
+                <a href="{% url 'update-room' room.id %}">Update</a>
+                <a href="{% url 'delete-room' room.id %}">Delete</a>
+            {% endif %}
+        </div>
+    
+        <div>
+            <h3>Conversations</h3>
+            <hr>
+    
+            {% for message in room_messages %}
+                <div>
+                    <small>@{{ message.user }} - {{ message.created_at  | timesince }}</small>
+                    <p>{{ message.content }}</p>
+
+                    {% if message.user == request.user or request.user == room.host %}
+                    <a href="{% url 'edit-message' message.id %}">Edit</a>
+                    <a href="{% url 'delete-message' message.id %}">Delete</a>
+                    {% endif %}
+                </div>
+            {% endfor %}
+    
+            {% if request.user.is_authenticated %}
+            <div>
+                <form method="POST">
+                    {% csrf_token %}
+                        <input type="text" name="content" min="4" ceholder="Write a message...">
+                    <button>Send</button>
+                </form>
+            </div>
+            {% endif %}
+        </div>
+    </div>
+
+    <aside>
+        <h2>Participants</h2>
+        <hr>
+
+        {% for participant in room_participants %}
+        <div>
+            <p>@{{ participant.username }}</p>
+        </div>
+        {% endfor %}
+    </aside>
+
+    
+</div>
+    
+{% endblock %}

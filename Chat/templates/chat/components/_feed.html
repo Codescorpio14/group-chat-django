@@ -1,0 +1,11 @@
+<h1>Available Rooms ({{ rooms.count }})</h1>
+<hr>
+{% for room in rooms %}
+    <article>
+        <a href="{% url 'profile' room.host.id %}">@ {{ room.host.username }}</a>
+        <br>
+        <a href="{% url 'room' room.id %}">{{ room.name }}</a>
+        <p>{{ room.description }}</p>
+        <small>{{room.topic}}</small>
+    </article>
+{% endfor %}
