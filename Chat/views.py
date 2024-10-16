@@ -23,10 +23,10 @@ def rooms(request):
         Q(topic__name__icontains=topic)
         | Q(name__contains=topic)
         | Q(host__username__icontains=topic),
-    )
+    ).order_by("-created_at", "-updated_at")
     room_messages = Message.objects.filter(
         Q(room__topic__name__icontains=topic)
-    ).order_by("-created_at", "-updated_at")[:6]
+    ).order_by("-created_at", "-updated_at")[:4]
 
     topics = Topics.objects.all()
     return render(
@@ -90,32 +90,42 @@ def edit_message(request, id):
 @login_required(login_url="login")
 def create_room(request):
     form = RoomForm()
+    topics = Topics.objects.all()
 
     if request.method == "POST":
-        form = RoomForm(request.POST)
-        if form.is_valid():
-            room = form.save(commit=False)
-            room.host = request.user
-            room.save()
-            return redirect("rooms")
-    return render(request, "chat/room_form.html", {"form": form})
+        topic_name = request.POST.get("topic")
+        topic, created = Topics.objects.get_or_create(name=topic_name)
+        Rooms.objects.create(
+            host=request.user,
+            topic=topic,
+            name=request.POST.get("name"),
+            description=request.POST.get("description"),
+        )
+        return redirect("rooms")
+    return render(request, "chat/room_form.html", {"form": form, "topics": topics})
 
 
 @login_required(login_url="login")
 def update_room(request, id):
     room = Rooms.objects.get(id=id)
     form = RoomForm(instance=room)
+    topics = Topics.objects.all()
 
     if request.user != room.host:
         return HttpResponse("You are not allowed to update this.")
 
     if request.method == "POST":
-        form = RoomForm(request.POST, instance=room)
-        if form.is_valid():
-            form.save()
-            return redirect("rooms")
+        topic_name = request.POST.get("topic")
+        topic, created = Topics.objects.get_or_create(name=topic_name)
+        room.name = request.POST.get("name")
+        room.topic = topic
+        room.description = request.POST.get("description")
+        room.save()
+        return redirect("rooms")
 
-    return render(request, "chat/room_form.html", {"form": form})
+    return render(
+        request, "chat/room_form.html", {"form": form, "topics": topics, "room": room}
+    )
 
 
 @login_required(login_url="login")
@@ -128,7 +138,7 @@ def delete_room(request, id):
     if request.method == "POST":
         room.delete()
         return redirect("rooms")
-    return render(request, "chat/delete.html", {"room": room})
+    return render(request, "chat/delete.html", {"obj": room})
 
 
 def register_user(request):
@@ -189,3 +199,8 @@ def user_profile(request, id):
             "topics": topics,
         },
     )
+
+
+@login_required(login_url="login")
+def update_user(request):
+    return render(request, "user/edit-user.html")

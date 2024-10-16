@@ -1,46 +1,57 @@
 {% extends 'base.html' %}
 
 {% block title %}
-    Profile
-{% endblock %}
-
-{% block styles %}
-    <style>
-        .profile-grid{
-            display: grid;
-            grid-template-columns: 1fr 4fr 1fr;
-            gap: 20px
-        }
-    </style>
+  Profile
 {% endblock %}
 
 {% block content %}
 
-    <section class="profile-con">
-       <h2>@{{ user.username }}</h2>
+  <main class="profile-page layout layout--3">
+    <div class="container">
+      <!-- Topics Start -->
+      <div class="topics">
+        {% include "chat/components/_topics.html" %}
+      </div>
+      <!-- Topics End -->
 
-       <div class="profile-grid">
-        <aside>
-            {% include "chat/components/_topics.html" with me="profile" %}
-         </aside>
- 
-         <div>
- 
-             {% if user.is_authenticated %}
-             <a href="{% url 'create-room' %}">+ New Room</a>
-             {% endif %}
- 
-             <div>
-                 {% include "chat/components/_feed.html" %}
-             </div>
-         </div>
- 
-         <div>
-           {% include "chat/components/_activity.html" %}
-         </div>
+      <!-- Room List Start -->
+      <div class="roomList">
+        <div class="profile">
+          <div class="profile__avatar">
+            <div class="avatar avatar--large active">
+              <img src="https://randomuser.me/api/portraits/women/5.jpg" />
+            </div>
+          </div>
+          <div class="profile__info">
+            <h3>{{user.username}}</h3>
+            <p>@{{user.username}}</p>
+            <a href="{% url 'update-user' %}" class="btn btn--main btn--pill">Edit Profile</a>
+          </div>
+          <div class="profile__about">
+            <h3>About</h3>
+            <p>
+              Lorem ipsum dolor sit amet consectetur adipisicing elit. Optio vero odio ab pariatur velit incidunt, quasi amet possimus quidem suscipit necessitatibus dolorem ex. Est aperiam, ex sunt quia sed nesciunt harum assumenda alias necessitatibus similique consequuntur quaerat aut eius illo laboriosam ut saepe dolore molestias, impedit, labore reiciendis rem cum ipsam.
+            </p>
+          </div>
+        </div>
 
-       </div>
+        <div class="roomList__header">
+          <div>
+            <h2>Study Rooms Hosted by {{ user.username }}</a>
+          </h2>
+        </div>
+      </div>
 
-    </section>
+      {% include "chat/components/_feed.html" %}
+    </div>
+      <!-- Room List End -->
+
+      <!-- Activities Start -->
+    <div class="activities">
+      {% include "chat/components/_activity.html" %}
+    </div>
+      <!-- Activities End -->
+  </div>
+  </main>
 
 {% endblock %}
