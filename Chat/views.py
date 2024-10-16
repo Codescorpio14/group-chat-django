@@ -14,7 +14,7 @@ from .forms import RoomForm
 
 
 def home(request):
-    return render(request, "chat/home.html")
+    return redirect("rooms")
 
 
 def rooms(request):
