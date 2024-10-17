@@ -8,7 +8,7 @@ from django.contrib.auth.decorators import login_required
 from django.db.models import Q
 from .models import Rooms, Topics, Message
 from django.contrib.auth.models import User
-from .forms import RoomForm
+from .forms import RoomForm, UserForm
 
 # Create your views here.
 
@@ -34,6 +34,17 @@ def rooms(request):
         "chat/rooms.html",
         {"rooms": rooms, "topics": topics, "room_messages": room_messages},
     )
+
+
+def topics(request):
+    topics = Topics.objects.all()
+    return render(request, "chat/topics.html", {"topics": topics})
+
+
+def activity(request):
+    room_messages = Message.objects.filter().order_by("-created_at", "-updated_at")[:3]
+
+    return render(request, "chat/activity.html", {"room_messages": room_messages})
 
 
 def singleRoomView(request, id):
@@ -203,4 +214,10 @@ def user_profile(request, id):
 
 @login_required(login_url="login")
 def update_user(request):
-    return render(request, "user/edit-user.html")
+    form = UserForm(instance=request.user)
+    if request.method == "POST":
+        form = UserForm(request.POST, instance=request.user)
+        if form.is_valid():
+            form.save()
+            return redirect("profile", id=request.user.id)
+    return render(request, "user/edit-user.html", {"form": form})

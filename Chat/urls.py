@@ -9,6 +9,8 @@ urlpatterns = [
     path("rooms/create/", views.create_room, name="create-room"),
     path("rooms/update/<str:id>/", views.update_room, name="update-room"),
     path("rooms/delete/<str:id>/", views.delete_room, name="delete-room"),
+    path("room/topics", views.topics, name="topics"),
+    path("room/activity", views.activity, name="activity"),
     # Message Curd Urls
     path("rooms/delete-message/<str:id>/", views.delete_message, name="delete-message"),
     path("rooms/edit-message/<str:id>/", views.edit_message, name="edit-message"),
