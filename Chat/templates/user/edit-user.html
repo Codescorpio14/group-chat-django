@@ -24,15 +24,25 @@
                     </div>
                 </div>
                 <div class="layout__body">
-                    <form class="form" method="POST">
+                    <form class="form" method="POST" enctype="multipart/form-data">
                         {% csrf_token %}
-
-                        {% for field in form %}
                             <div class="form__group">
-                                <label >{{field.label}}</label>
-                                <input type="text" name="{{field.name}}" value="{{field.value|default_if_none:''}}">
+                                <label >{{form.avatar.label}}</label>
+                                {{form.avatar }}
                             </div>
-                        {% endfor %}
+                            <div class="form__group">
+                                {{form.name.as_field_group}}
+                            </div>
+                            <div class="form__group">
+                                {{form.username.as_field_group}}
+                            </div>
+                            <div class="form__group">
+                                {{form.email.as_field_group}}
+                            </div>
+                            <div class="form__group">
+                                {{form.bio.as_field_group}}
+                            </div>
+                       
                         <div class="form__action">
                             <a class="btn btn--dark" href="{{request.META.HTTP_REFERER}}">Cancel</a>
                             <button class="btn btn--main" type="submit">Update</button>
@@ -43,4 +53,20 @@
         </div>
     </div>
     </main>
+
+    <script>
+        document.addEventListener("DOMContentLoaded", function() {
+            const clearCheckbox = document.querySelector('input[name="avatar-clear"]');
+            const clearLabel = document.querySelector('label[for="avatar-clear_id"]');
+            
+            if (clearCheckbox) {
+                clearCheckbox.style.display = 'none'; 
+            }
+    
+            if (clearLabel) {
+                clearLabel.style.display = 'none';
+            }
+        });
+    </script>
 {% endblock %}
+

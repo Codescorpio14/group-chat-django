@@ -17,8 +17,8 @@
             <form class="form" method="POST">
               {% csrf_token %}
               <div class="form__group form__group">
-                <label for="room_name">Username</label>
-                <input id="username" name="username" type="text" placeholder="e.g. dennis_ivy" />
+                <label for="room_name">Email</label>
+                <input id="username" name="email" type="email" placeholder="e.g. H5N7A@example.com" />
               </div>
               <div class="form__group">
                 <label for="password">Password</label>
@@ -68,12 +68,23 @@
             <form class="form" method="POST">
               {% csrf_token %}
 
-              {% for field in form %}
-                <div class="form__group">
-                  <label for="confirm_password">{{field.label}}</label>
-                  {{field}}
-                </div>
-              {% endfor %}
+              <div class="form__group">
+                {{form.name.as_field_group}}
+              </div>
+              <div class="form__group">
+                <label for="username">Username:</label>
+                {{form.username}}
+              </div>
+              <div class="form__group">
+                {{form.email.as_field_group}}
+              </div>
+              <div class="form__group">
+                <label for="username">Password:</label>
+                {{form.password1}}
+              </div>
+              <div class="form__group">
+                {{form.password2.as_field_group}}
+              </div>
 
               <button class="btn btn--main" type="submit">
                 <svg

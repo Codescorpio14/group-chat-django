@@ -1,14 +1,11 @@
-from pydoc_data import topics
 from django.http import HttpResponse
 from django.shortcuts import redirect, render
 from django.contrib import messages
 from django.contrib.auth import authenticate, login, logout
-from django.contrib.auth.forms import UserCreationForm
 from django.contrib.auth.decorators import login_required
 from django.db.models import Q
-from .models import Rooms, Topics, Message
-from django.contrib.auth.models import User
-from .forms import RoomForm, UserForm
+from .models import Rooms, Topics, Message, User
+from .forms import RoomForm, UserForm, CustomUserCreationForm
 
 # Create your views here.
 
@@ -153,9 +150,9 @@ def delete_room(request, id):
 
 
 def register_user(request):
-    form = UserCreationForm()
+    form = CustomUserCreationForm()
     if request.method == "POST":
-        form = UserCreationForm(request.POST)
+        form = CustomUserCreationForm(request.POST)
         if form.is_valid():
             user = form.save(commit=False)
             user.username = user.username.lower()
@@ -172,14 +169,14 @@ def login_view(request):
         return redirect("home")
 
     if request.method == "POST":
-        username = request.POST.get("username")
+        email = request.POST.get("email")
         password = request.POST.get("password")
         try:
-            user = User.objects.get(username=username)
+            user = User.objects.get(email=email)
         except:
             messages.error(request, "User does not exist")
 
-        user = authenticate(request, username=username, password=password)
+        user = authenticate(request, email=email, password=password)
 
         if user is not None:
             login(request, user)
@@ -194,7 +191,6 @@ def logout_view(request):
     return redirect("home")
 
 
-@login_required(login_url="login")
 def user_profile(request, id):
     user = User.objects.get(id=id)
     rooms = user.rooms_set.all()
@@ -214,10 +210,11 @@ def user_profile(request, id):
 
 @login_required(login_url="login")
 def update_user(request):
-    form = UserForm(instance=request.user)
+    user = request.user
+    form = UserForm(instance=user)
     if request.method == "POST":
-        form = UserForm(request.POST, instance=request.user)
+        form = UserForm(request.POST, request.FILES, instance=user)
         if form.is_valid():
             form.save()
-            return redirect("profile", id=request.user.id)
+            return redirect("profile", id=user.id)
     return render(request, "user/edit-user.html", {"form": form})
